@@ -1,0 +1,144 @@
+openapi: 3.0.3
+info:
+  title: STD24185
+  version: 1.0.0
+  description: "This is a specification of STD24185"
+servers:
+  - url: http://localhost:8000
+
+paths:
+  /ping:
+    get:
+      summary: Juste test de la serveur
+      responses:
+        '200':
+          description: Pong réponse
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+
+  /cars:
+    post:
+      summary: Créer un car
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Car"
+      responses:
+        '201':
+          description: Car créerr
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Car"
+
+    get:
+      summary: Get toutes les cars
+      responses:
+        '200':
+          description: Liste des cars
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Car"
+
+  /cars/{id}:
+    get:
+      summary: Get un car par son id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Car trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Car"
+        '404':
+          description: Car non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Car   avec l'id '001' non trouvé."
+
+  /cars/{id}/characteristics:
+    put:
+      summary: Faire un mis à jour d'une charactéristique d'un car
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Characteristic"
+      responses:
+        '200':
+          description: Car umis à jour avec une nouvelle charactéristique
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Car"
+        '404':
+          description: Car non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Car avec l'id '001' non trouvé."
+
+components:
+  schemas:
+    Characteristic:
+      type: object
+      properties:
+        max_speed:
+          type: number
+          example: 220
+        max_fuel_capacity:
+          type: number
+          example: 55
+      required:
+        - max_speed
+        - max_fuel_capacity
+
+    Car:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: "9072TBG"
+        brand:
+          type: string
+          example: "Sprinter"
+        model:
+          type: string
+          example: "Camyonette"
+        characteristics:
+          $ref: "#/components/schemas/Characteristic"
+      required:
+        - identifier
+        - brand
+        - model
+        - characteristics
